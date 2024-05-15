@@ -50,6 +50,11 @@
   :group 'posframe
   :type 'boolean)
 
+(defcustom posframe-allow-outside-parent-frame nil
+  "Allow posframe to show outside of its parent frame."
+  :group 'posframe
+  :type 'boolean)
+
 (defcustom posframe-mouse-banish-function #'posframe-mouse-banish-default
   "The function used to banish mouse.
 
@@ -371,10 +376,14 @@ An example parent frame poshandler function is:
 You can use `posframe-delete-all' to delete all posframes."
   (let* ((position (or position (point)))
          (max-width (if (numberp max-width)
-                        (min max-width (frame-width))
+                        (if posframe-allow-outside-parent-frame
+                            max-width
+                          (min max-width (frame-width)))
                       (frame-width)))
          (max-height (if (numberp max-height)
-                         (min max-height (frame-height))
+                         (if posframe-allow-outside-parent-frame
+                             max-height
+                           (min max-height (frame-height)))
                        (frame-height)))
          (min-width (min (or min-width 1) max-width))
          (min-height (min (or min-height 1) max-height))
